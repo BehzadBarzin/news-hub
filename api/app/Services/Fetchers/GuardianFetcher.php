@@ -45,6 +45,7 @@ class GuardianFetcher extends Fetcher
 
                 foreach ($apiArticles as $apiArticle)
                 {
+                    // If article already exists, ignore the rest
                     if ($this->articleExists($apiArticle['webUrl'])) break;
 
                     $this->saveArticle($apiArticle, $localCategory->id);
@@ -72,16 +73,28 @@ class GuardianFetcher extends Fetcher
 
     protected function saveArticle($article, $localCategoryId)
     {
-        Article::create([
+        // Since below variables never change, define them as static and initialize them on first execution only.
+        static $source = null;
+        if (!$source) {
+            $source = $this->createOrReturnSource('The Guardian');
+        }
+
+        static $authors = null;
+        if (!$authors) {
+            $authors = $this->createOrReturnAuthors(['The Guardian']);
+        }
+
+        $dbArticle = Article::create([
             'url' => $article['webUrl'],
             'title' => $article['webTitle'],
             'description' => null,
             'image_url' => asset('images/guardian.jpg'),
             'published_at' => $article['webPublicationDate'],
-            'source' => 'The Guardian',
-            'author' => 'The Guardian',
+            'source_id' => $source->id,
             'category_id' => $localCategoryId,
         ]);
+
+        $dbArticle->authors()->attach($authors);
     }
 
 }

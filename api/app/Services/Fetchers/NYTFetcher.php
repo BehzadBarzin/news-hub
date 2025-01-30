@@ -45,6 +45,7 @@ class NYTFetcher extends Fetcher
 
                 foreach ($apiArticles as $apiArticle)
                 {
+                    // If article already exists, ignore the rest
                     if ($this->articleExists($apiArticle['url'])) break;
 
                     $this->saveArticle($apiArticle, $localCategory->id);
@@ -89,18 +90,28 @@ class NYTFetcher extends Fetcher
 
     protected function saveArticle($article, $localCategoryId)
     {
-        Article::create([
+        // Since the below variable never changes, define it as static and initialize it on first execution only.
+        static $source = null;
+        if (!$source) {
+            $source = $this->createOrReturnSource('New York Times');
+        }
+
+        $authors = $this->createOrReturnAuthors($this->getAuthors($article) ?? ['New York Times']);
+
+        $dbArticle = Article::create([
             'url' => $article['url'],
             'title' => $article['title'],
             'description' => $article['abstract'],
             'image_url' => $this->getImage($article) ?? asset('images/nyt.webp'),
             'published_at' => $article['published_date'],
-            'source' => 'New York Times',
-            'author' => $this->getAuthors($article)[0] ?? 'New York Times',
+            'source_id' => $source->id,
             'category_id' => $localCategoryId,
         ]);
+
+        $dbArticle->authors()->attach($authors);
     }
 
+    // Todo: Needs Improvement
     private function getAuthors($apiArticle): array
     {
         $byLine = $apiArticle['byline'];

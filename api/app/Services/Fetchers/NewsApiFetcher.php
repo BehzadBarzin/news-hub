@@ -46,6 +46,7 @@ class NewsApiFetcher extends Fetcher
 
                 foreach ($apiArticles as $apiArticle)
                 {
+                    // If article already exists, ignore the rest
                     if ($this->articleExists($apiArticle['url'])) break;
 
                     $this->saveArticle($apiArticle, $localCategory->id);
@@ -73,15 +74,20 @@ class NewsApiFetcher extends Fetcher
 
     protected function saveArticle($article, $localCategoryId)
     {
-        Article::create([
+        $source = $this->createOrReturnSource($article['source']['name'] ?? 'NewsAPI');
+
+        $authors = $this->createOrReturnAuthors([$article['author'] ?? $article['source']['name'] ?? 'NewsAPI']);
+
+        $dbArticle = Article::create([
             'url' => $article['url'],
             'title' => $article['title'],
             'description' => $article['description'],
             'image_url' => $article['urlToImage'] ?? asset('images/news_api.png'),
             'published_at' => $article['publishedAt'],
-            'source' => $article['source']['name'] ?? 'NewsAPI',
-            'author' => $article['author'] ?? $article['source']['name'] ?? 'NewsAPI',
+            'source_id' => $source->id,
             'category_id' => $localCategoryId,
         ]);
+
+        $dbArticle->authors()->attach($authors);
     }
 }
