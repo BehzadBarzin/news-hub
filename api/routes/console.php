@@ -10,7 +10,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 // Using Job (Queue)
-Schedule::job(new FetchNewsJob())->everyFiveSeconds();
-
-// Using Artisan command
-// Schedule::command('news:fetch')->everyFiveSeconds()->withoutOverlapping();
+Schedule::job(new FetchNewsJob())->hourly();

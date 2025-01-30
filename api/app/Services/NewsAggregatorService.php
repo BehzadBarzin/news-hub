@@ -19,8 +19,11 @@ class NewsAggregatorService
     {
         foreach ($this->fetchers as $fetcher) {
             if ($fetcher instanceof Fetcher) {
-                $articles = $fetcher->fetch();
-                // Todo: Save articles to DB
+                try {
+                    $fetcher->fetch();
+                } catch (\Exception $e) {
+                    Log::error("Error while fetching news articles: {$e->getMessage()}");
+                }
             }
         }
     }
