@@ -3,12 +3,62 @@
 namespace App\Http\Controllers;
 
 use App\Models\Author;
-use \Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
+/**
+ * @OA\Tag(
+ *     name="Authors",
+ *     description="Operations related to authors"
+ * )
+ */
 class AuthorController extends Controller
 {
-    public function index(Request $request): LengthAwarePaginator
+    /**
+     * @OA\Get(
+     *     path="/api/authors",
+     *     tags={"Authors"},
+     *     summary="Get all authors",
+     *     description="Returns a paginated list of authors with optional filtering",
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=15)
+     *     ),
+     *     @OA\Parameter(
+     *         name="name",
+     *         in="query",
+     *         description="Filter authors by name",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="with",
+     *         in="query",
+     *         description="Comma-separated relations to include (e.g., articles). Supports nested relations (e.g. articles.source)",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Author")),
+     *             @OA\Property(property="meta", type="object", ref="#/components/schemas/PaginationMeta")
+     *         )
+     *     )
+     * )
+     */
+    public function index(Request $request)
     {
         $perPage = $request->query('per_page', 15);
 
@@ -21,9 +71,40 @@ class AuthorController extends Controller
             $query->with($relations);
         }
 
-        return $query->paginate($perPage);
+        return $query->simplePaginate($perPage);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/authors/{id}",
+     *     tags={"Authors"},
+     *     summary="Get a specific author",
+     *     description="Returns a single author by ID with optional relations",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the author",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="with",
+     *         in="query",
+     *         description="Comma-separated relations to include (e.g., articles). Supports nested relations (e.g. articles.source)",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/Author")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Author not found"
+     *     )
+     * )
+     */
     public function show(Request $request, Author $author): Author
     {
         // Populate relations if requested
