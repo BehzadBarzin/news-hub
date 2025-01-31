@@ -13,46 +13,27 @@ class GuardianFetcher extends Fetcher
 
     protected string $apiKey;
 
-    protected array $categoryMappings = [
-        'Business' => [ 'business', 'money'],
-        'Science' => [ 'science' ],
-        'Sports' => [ 'sport' ],
-        'Technology' => [ 'technology' ],
-        'Health' => [ 'healthcare-network' ],
-        'Entertainment' => [ 'fashion', 'tv-and-radio', 'stage', 'music', 'media'],
-        'General' => [ 'world', 'politics', 'news', 'weather', 'us-news', 'travel', 'info'],
-    ];
-
     public function __construct()
     {
         $this->apiKey = config('services.apiKeys.guardian');
     }
 
-    public function fetch()
+    protected function getCategoryMappings(): array
     {
-        Log::debug("Guardian Fetcher");
+        return [
+            'Business' => [ 'business', 'money'],
+            'Science' => [ 'science' ],
+            'Sports' => [ 'sport' ],
+            'Technology' => [ 'technology' ],
+            'Health' => [ 'healthcare-network' ],
+            'Entertainment' => [ 'fashion', 'tv-and-radio', 'stage', 'music', 'media'],
+            'General' => [ 'world', 'politics', 'news', 'weather', 'us-news', 'travel', 'info'],
+        ];
+    }
 
-        // For each category mapping
-        foreach ($this->categoryMappings as $localCategoryName => $apiCategories)
-        {
-            // Get the local category from DB
-            $localCategory = Category::where('name', $localCategoryName)->firstOrFail();
-
-            // For each API category
-            foreach ($apiCategories as $apiCategory)
-            {
-                $apiArticles = $this->fetchCategoryArticles($apiCategory);
-
-                foreach ($apiArticles as $apiArticle)
-                {
-                    // If article already exists, ignore the rest
-                    if ($this->articleExists($apiArticle['webUrl'])) break;
-
-                    $this->saveArticle($apiArticle, $localCategory->id);
-                }
-            }
-        }
-
+    protected function getArticleURLField($apiArticle): string
+    {
+        return $apiArticle['webUrl'];
     }
 
     protected function fetchCategoryArticles(string $apiCategory): array
@@ -71,7 +52,7 @@ class GuardianFetcher extends Fetcher
         return $items;
     }
 
-    protected function saveArticle($article, $localCategoryId)
+    protected function saveArticle($article, $localCategoryId): void
     {
         // Since below variables never change, define them as static and initialize them on first execution only.
         static $source = null;
@@ -96,5 +77,4 @@ class GuardianFetcher extends Fetcher
 
         $dbArticle->authors()->attach($authors);
     }
-
 }

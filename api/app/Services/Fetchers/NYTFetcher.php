@@ -3,8 +3,6 @@
 namespace App\Services\Fetchers;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use App\Models\Category;
 use App\Models\Article;
 
 class NYTFetcher extends Fetcher
@@ -13,46 +11,27 @@ class NYTFetcher extends Fetcher
 
     protected string $apiKey;
 
-    protected array $categoryMappings = [
-        'Business' => [ 'business' ],
-        'Science' => [ 'science' ],
-        'Sports' => [ 'sports' ],
-        'Technology' => [ 'technology' ],
-        'Health' => [ 'health' ],
-        'Entertainment' => [ 'movies', 'theater', 'fashion', 'arts'],
-        'General' => [ 'world', 'politics', 'us'],
-    ];
-
     public function __construct()
     {
         $this->apiKey = config('services.apiKeys.nyt');
     }
 
-    public function fetch()
+    protected function getCategoryMappings(): array
     {
-        Log::debug("NYT Fetcher");
+        return [
+            'Business' => [ 'business' ],
+            'Science' => [ 'science' ],
+            'Sports' => [ 'sports' ],
+            'Technology' => [ 'technology' ],
+            'Health' => [ 'health' ],
+            'Entertainment' => [ 'movies', 'theater', 'fashion', 'arts'],
+            'General' => [ 'world', 'politics', 'us'],
+        ];
+    }
 
-        // For each category mapping
-        foreach ($this->categoryMappings as $localCategoryName => $apiCategories)
-        {
-            // Get the local category from DB
-            $localCategory = Category::where('name', $localCategoryName)->firstOrFail();
-
-            // For each API category
-            foreach ($apiCategories as $apiCategory)
-            {
-                $apiArticles = $this->fetchCategoryArticles($apiCategory);
-
-                foreach ($apiArticles as $apiArticle)
-                {
-                    // If article already exists, ignore the rest
-                    if ($this->articleExists($apiArticle['url'])) break;
-
-                    $this->saveArticle($apiArticle, $localCategory->id);
-                }
-            }
-        }
-
+    protected function getArticleURLField($apiArticle): string
+    {
+        return $apiArticle['url'];
     }
 
     protected function fetchCategoryArticles(string $apiCategory): array
@@ -88,7 +67,7 @@ class NYTFetcher extends Fetcher
         return [];
     }
 
-    protected function saveArticle($article, $localCategoryId)
+    protected function saveArticle($article, $localCategoryId): void
     {
         // Since the below variable never changes, define it as static and initialize it on first execution only.
         static $source = null;

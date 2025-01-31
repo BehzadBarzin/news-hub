@@ -3,9 +3,7 @@
 namespace App\Services\Fetchers;
 
 use App\Models\Article;
-use App\Models\Category;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class NewsApiFetcher extends Fetcher
 {
@@ -13,47 +11,27 @@ class NewsApiFetcher extends Fetcher
 
     protected string $apiKey;
 
-    protected array $categoryMappings = [
-        'Business' => [ 'business' ],
-        'Science' => [ 'science' ],
-        'Sports' => [ 'sports' ],
-        'Technology' => [ 'technology' ],
-        'Health' => [ 'health' ],
-        'Entertainment' => [ 'entertainment' ],
-        'General' => [ 'general' ],
-    ];
-
-
     public function __construct()
     {
         $this->apiKey = config('services.apiKeys.news-api');
     }
 
-    public function fetch()
+    protected function getCategoryMappings(): array
     {
-        Log::debug("NewsAPI Fetcher");
+        return [
+            'Business' => [ 'business' ],
+            'Science' => [ 'science' ],
+            'Sports' => [ 'sports' ],
+            'Technology' => [ 'technology' ],
+            'Health' => [ 'health' ],
+            'Entertainment' => [ 'entertainment' ],
+            'General' => [ 'general' ],
+        ];
+    }
 
-        // For each category mapping
-        foreach ($this->categoryMappings as $localCategoryName => $apiCategories)
-        {
-            // Get the local category from DB
-            $localCategory = Category::where('name', $localCategoryName)->firstOrFail();
-
-            // For each API category
-            foreach ($apiCategories as $apiCategory)
-            {
-                $apiArticles = $this->fetchCategoryArticles($apiCategory);
-
-                foreach ($apiArticles as $apiArticle)
-                {
-                    // If article already exists, ignore the rest
-                    if ($this->articleExists($apiArticle['url'])) break;
-
-                    $this->saveArticle($apiArticle, $localCategory->id);
-                }
-            }
-        }
-
+    protected function getArticleURLField($apiArticle): string
+    {
+        return $apiArticle['url'];
     }
 
     protected function fetchCategoryArticles(string $apiCategory): array
@@ -72,7 +50,7 @@ class NewsApiFetcher extends Fetcher
         return $items;
     }
 
-    protected function saveArticle($article, $localCategoryId)
+    protected function saveArticle($article, $localCategoryId): void
     {
         $source = $this->createOrReturnSource($article['source']['name'] ?? 'NewsAPI');
 
