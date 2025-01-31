@@ -6,6 +6,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SourceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FeedController;
 
 // Auth Routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -25,3 +26,12 @@ Route::get('/authors/{author}', [AuthorController::class, 'show']);
 
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/{category}', [CategoryController::class, 'show']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/feeds', [FeedController::class, 'store']);
+    Route::get('/feeds', [FeedController::class, 'index']);
+    Route::get('/feeds/{feed}', [FeedController::class, 'show']);
+    Route::get('/feeds/{feed}/articles', [FeedController::class, 'articles']);
+    Route::patch('/feeds/{feed}', [FeedController::class, 'update']);
+    Route::delete('/feeds/{feed}', [FeedController::class, 'destroy']);
+});
