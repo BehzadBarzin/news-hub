@@ -11,7 +11,9 @@ class CategoryController extends Controller
     public function index(Request $request): LengthAwarePaginator
     {
         $perPage = $request->query('per_page', 15);
-        $query = Category::query();
+
+        // Apply query param filter
+        $query = Category::filter($request->all());
 
         // Populate relations if requested
         if ($request->has('with')) {

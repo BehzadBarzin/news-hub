@@ -11,7 +11,9 @@ class AuthorController extends Controller
     public function index(Request $request): LengthAwarePaginator
     {
         $perPage = $request->query('per_page', 15);
-        $query = Author::query();
+
+        // Apply query param filter
+        $query = Author::filter($request->all());
 
         // Populate relations if requested
         if ($request->has('with')) {

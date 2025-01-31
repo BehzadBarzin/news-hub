@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Model;
 
 class Article extends Model
 {
+    use Filterable;
+
     protected $fillable = [
         'source_id', 'title', 'description', 'content', 'author',
         'url', 'image_url', 'published_at', 'category_id'

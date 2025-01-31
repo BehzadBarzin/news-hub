@@ -11,7 +11,9 @@ class SourceController extends Controller
     public function index(Request $request): LengthAwarePaginator
     {
         $perPage = $request->query('per_page', 15);
-        $query = Source::query();
+
+        // Apply query param filter
+        $query = Source::filter($request->all());
 
         // Populate relations if requested
         if ($request->has('with')) {

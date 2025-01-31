@@ -10,7 +10,10 @@ class ArticleController extends Controller
 {
     public function index(Request $request): LengthAwarePaginator
     {
-        $perPage = $request->query('per_page', 15);        $query = Article::query();
+        $perPage = $request->query('per_page', 15);
+
+        // Apply query param filter
+        $query = Article::filter($request->all());
 
         // Populate relations if requested
         if ($request->has('with')) {
