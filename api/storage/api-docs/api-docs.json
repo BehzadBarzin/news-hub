@@ -208,7 +208,23 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "User registered successfully"
+                        "description": "User registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "15|YZ96KFLia3fqgT8RWS7wQodsDVIEkGG4EC1Km6UJfe06ce14"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "422": {
                         "description": "Validation error"
@@ -251,7 +267,23 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "User logged in successfully"
+                        "description": "User logged in successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "15|YZ96KFLia3fqgT8RWS7wQodsDVIEkGG4EC1Km6UJfe06ce14"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -1208,6 +1240,33 @@
                     },
                     "name": {
                         "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "email_verified_at": {
+                        "type": "string",
+                        "format": "nullable",
+                        "example": null
                     },
                     "created_at": {
                         "type": "string",

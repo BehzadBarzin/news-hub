@@ -30,7 +30,14 @@ class AuthController extends Controller
      *             @OA\Property(property="password_confirmation", type="string", format="password", example="password123")
      *         )
      *     ),
-     *     @OA\Response(response=201, description="User registered successfully"),
+     *     @OA\Response(
+     *          response=201,
+     *          description="User registered successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="user", ref="#/components/schemas/User"),
+     *             @OA\Property(property="token", type="string", example="15|YZ96KFLia3fqgT8RWS7wQodsDVIEkGG4EC1Km6UJfe06ce14")
+     *         )
+     *     ),
      *     @OA\Response(response=422, description="Validation error")
      * )
      */
@@ -69,7 +76,14 @@ class AuthController extends Controller
      *             @OA\Property(property="password", type="string", format="password", example="password123")
      *         )
      *     ),
-     *     @OA\Response(response=200, description="User logged in successfully"),
+     *     @OA\Response(
+     *          response=200,
+     *          description="User logged in successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="user", ref="#/components/schemas/User"),
+     *             @OA\Property(property="token", type="string", example="15|YZ96KFLia3fqgT8RWS7wQodsDVIEkGG4EC1Km6UJfe06ce14")
+     *         )
+     *      ),
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
