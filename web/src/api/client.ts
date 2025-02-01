@@ -36,4 +36,4 @@ const authMiddleware: Middleware = {
 
 apiClient.use(authMiddleware);
 
-export const { GET, POST, PUT, DELETE } = apiClient;
+export const { GET, POST, PUT, PATCH, DELETE } = apiClient;

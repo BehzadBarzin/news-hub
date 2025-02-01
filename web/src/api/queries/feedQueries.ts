@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { GET, POST } from "../client";
+import { DELETE, GET, PATCH, POST } from "../client";
 import { paths } from "../types/api";
 
 export const useFeeds = () => {
@@ -42,17 +42,69 @@ export const useFeedArticles = (
   });
 };
 
-type NewFeed =
+type NewFeedBody =
   paths["/api/feeds"]["post"]["requestBody"]["content"]["application/json"];
 
 export const useCreateFeed = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (newFeed: NewFeed) => {
+    mutationFn: async (newFeed: NewFeedBody) => {
       const { data, error } = await POST("/api/feeds", {
         body: newFeed,
       });
-      if (error) throw new Error(`API Error: ${error}`);
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["feeds"] }); // Re-fetch feeds after creation
+    },
+  });
+};
+
+type UpdateFeedBody =
+  paths["/api/feeds/{id}"]["patch"]["requestBody"]["content"]["application/json"];
+
+export const useUpdateFeed = (feedId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (feedData: UpdateFeedBody) => {
+      const { data, error } = await PATCH("/api/feeds/{id}", {
+        body: feedData,
+        params: {
+          path: { id: feedId },
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["feeds"] }); // Re-fetch feeds after creation
+    },
+  });
+};
+
+export const useDeleteFeed = (feedId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const { data, error } = await DELETE("/api/feeds/{id}", {
+        params: {
+          path: { id: feedId },
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
       return data;
     },
     onSuccess: () => {
