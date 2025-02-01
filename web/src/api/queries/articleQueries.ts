@@ -20,21 +20,21 @@ export const useArticles = (
   return useQuery({
     queryKey: ["articles", filter, page, per_page],
     queryFn: async () => {
-      try {
-        const data = await GET("/api/articles", {
-          params: {
-            query: {
-              ...filter,
-              page,
-              per_page,
-            },
+      const { data, error } = await GET("/api/articles", {
+        params: {
+          query: {
+            ...filter,
+            page,
+            per_page,
           },
-        });
+        },
+      });
 
-        return data;
-      } catch (error) {
-        throw new Error(`API Error: ${error}`);
+      if (error) {
+        throw error;
       }
+
+      return data;
     },
     placeholderData: (prev) => prev, // Smooth pagination experience (keepPreviousData: true, is deprecated)
   });

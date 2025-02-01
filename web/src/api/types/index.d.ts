@@ -4,7 +4,7 @@
 import { components, paths } from "./api";
 
 export type User = components["schemas"]["User"];
-export type Article = components["schemas"]["Author"];
+export type Article = components["schemas"]["Article"];
 export type Author = components["schemas"]["Author"];
 export type Category = components["schemas"]["Category"];
 export type Source = components["schemas"]["Source"];

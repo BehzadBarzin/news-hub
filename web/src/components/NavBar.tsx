@@ -15,7 +15,7 @@ const NavBar = () => {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   return (
-    <nav className="navbar bg-base-100 shadow-lg fixed">
+    <nav className="navbar bg-base-100 shadow-lg fixed z-50">
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">

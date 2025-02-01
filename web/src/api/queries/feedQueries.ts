@@ -7,7 +7,11 @@ export const useFeeds = () => {
     queryKey: ["feeds"],
     queryFn: async () => {
       const { data, error } = await GET("/api/feeds");
-      if (error) throw new Error(`API Error: ${error}`);
+
+      if (error) {
+        throw error;
+      }
+
       return data;
     },
   });
@@ -27,7 +31,11 @@ export const useFeedArticles = (
           query: { page, per_page },
         },
       });
-      if (error) throw new Error(`API Error: ${error}`);
+
+      if (error) {
+        throw error;
+      }
+
       return data;
     },
     placeholderData: (prev) => prev, // Smooth pagination experience (keepPreviousData: true, is deprecated)
