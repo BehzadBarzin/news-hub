@@ -10,7 +10,7 @@ type ArticleQuery = Exclude<
 >;
 
 // Infer the filter query params by removing the pagination variables
-type ArticleFilter = Omit<ArticleQuery, "page" | "per_page">;
+export type ArticleFilter = Omit<ArticleQuery, "page" | "per_page">;
 
 export const useArticles = (
   filter: ArticleFilter,
