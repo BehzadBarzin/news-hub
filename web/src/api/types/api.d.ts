@@ -406,12 +406,14 @@ export interface operations {
                 page?: number;
                 /** @description Number of items per page */
                 per_page?: number;
-                /** @description Filter articles by title */
+                /** @description Comma-separated list of keywords to filter articles by title */
                 title?: string;
-                /** @description Filter articles by source ID */
-                source?: number;
-                /** @description Filter articles by category ID */
-                category?: number;
+                /** @description Comma-separated array of Source IDs to filter articles by source */
+                source?: string;
+                /** @description Comma-separated array of Category IDs to filter articles by category */
+                category?: string;
+                /** @description Comma-separated array of Author IDs to filter articles by authors */
+                authors?: string;
                 /** @description Filter articles published after a specific date (YYYY-MM-DD) */
                 published_after?: string;
                 /** @description Filter articles published before a specific date (YYYY-MM-DD) */

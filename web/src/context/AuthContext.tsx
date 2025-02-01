@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import Cookies from "js-cookie";
-import { AuthResponse, LoginRequest } from "../types";
+import { AuthResponse, LoginRequest } from "../api/types";
 import { POST } from "../api/client";
 
 export const AUTH_COOKIE_KEY = "auth-cookie";

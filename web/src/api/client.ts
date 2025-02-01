@@ -1,5 +1,5 @@
 import createClient from "openapi-fetch";
-import { paths } from "../types/api";
+import { paths } from "./types/api";
 import Cookies from "js-cookie";
 
 /**
