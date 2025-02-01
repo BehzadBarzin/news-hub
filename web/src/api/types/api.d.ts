@@ -433,9 +433,8 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
+                    "application/json": components["schemas"]["PaginationMeta"] & {
                         data?: components["schemas"]["Article"][];
-                        meta?: components["schemas"]["PaginationMeta"];
                     };
                 };
             };
@@ -640,9 +639,8 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
+                    "application/json": components["schemas"]["PaginationMeta"] & {
                         data?: components["schemas"]["Author"][];
-                        meta?: components["schemas"]["PaginationMeta"];
                     };
                 };
             };
@@ -981,9 +979,8 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
+                    "application/json": components["schemas"]["PaginationMeta"] & {
                         data?: components["schemas"]["Article"][];
-                        meta?: components["schemas"]["PaginationMeta"];
                     };
                 };
             };
@@ -1027,9 +1024,8 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
+                    "application/json": components["schemas"]["PaginationMeta"] & {
                         data?: components["schemas"]["Source"][];
-                        meta?: components["schemas"]["PaginationMeta"];
                     };
                 };
             };

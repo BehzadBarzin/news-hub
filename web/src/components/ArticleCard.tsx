@@ -1,15 +1,27 @@
 import { Article } from "../api/types";
 
+function formatDate(isoString: string): string {
+  const date = new Date(isoString);
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+  return new Intl.DateTimeFormat("en-US", options).format(date);
+}
+
 const ArticleCard = ({ article }: { article: Article }) => {
   return (
-    <div className="card bg-base-100 object-cover image-full shadow-sm">
+    <a
+      href={article.url}
+      target="_blank"
+      className="card bg-base-100 object-cover image-full shadow-sm hover-shadow"
+    >
       <figure>
-        <img
-          src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
-          alt="Shoes"
-        />
+        <img src={article.image_url} alt="article" className="object-center" />
       </figure>
       <div className="card-body">
+        {article.published_at && <p>{formatDate(article.published_at)}</p>}
         <h2 className="card-description font-bold">{article.title}</h2>
         <div className="card-actions">
           {article.authors?.map((author) => {
@@ -32,7 +44,7 @@ const ArticleCard = ({ article }: { article: Article }) => {
           </div>
         </div>
       </div>
-    </div>
+    </a>
   );
 };
 

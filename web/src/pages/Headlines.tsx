@@ -1,5 +1,8 @@
-import { useState } from "react";
-import { ArticleFilter, useArticles } from "../api/queries/articleQueries";
+import { Fragment, useEffect } from "react";
+import {
+  ArticleFilter,
+  useInfiniteArticles,
+} from "../api/queries/articleQueries";
 import { Article } from "../api/types";
 import ArticleCard from "../components/ArticleCard";
 import AuthorFilter from "../components/AuthorFilter";
@@ -8,6 +11,7 @@ import DateFilter from "../components/DateFilter";
 import KeywordFilter from "../components/KeywordFilter";
 import SourceFilter from "../components/SourceFilter";
 import { useSearchParams } from "react-router-dom";
+import { useInView } from "react-intersection-observer";
 
 const Headlines = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -15,22 +19,35 @@ const Headlines = () => {
   // Extract filters from URL
   const title = searchParams.get("title")?.split(",") || [];
   const authors = searchParams.get("authors")?.split(",").map(Number) || [];
-  const sources = searchParams.get("sources")?.split(",").map(Number) || [];
-  const categories =
-    searchParams.get("categories")?.split(",").map(Number) || [];
+  const source = searchParams.get("source")?.split(",").map(Number) || [];
+  const category = searchParams.get("category")?.split(",").map(Number) || [];
   const publishedAfter = searchParams.get("published_after") || "";
   const publishedBefore = searchParams.get("published_before") || "";
 
   // Fetch articles based on filters
-  const { data: articleData, isLoading } = useArticles({
+  const {
+    data: articleData,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteArticles({
     title: title.join(","),
     authors: authors.join(","),
-    source: sources.join(","),
-    category: categories.join(","),
+    source: source.join(","),
+    category: category.join(","),
     published_after: publishedAfter,
     published_before: publishedBefore,
     with: "authors,category,source",
   });
+
+  // Infinite scroll trigger
+  const { ref, inView } = useInView();
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // Handle filter changes
   const updateFilters = (newFilters: ArticleFilter) => {
@@ -73,7 +90,15 @@ const Headlines = () => {
                 updateFilters({ title: selected.join(",") })
               }
             />
-
+            <div className="divider"></div>
+            {/* Categories Filter */}
+            <CategoryFilter
+              initialItems={category}
+              onSelect={(selected: number[]) =>
+                updateFilters({ category: selected.join(",") })
+              }
+            />
+            <div className="divider"></div>
             {/* Authors Filter */}
             <AuthorFilter
               initialItems={authors}
@@ -81,23 +106,15 @@ const Headlines = () => {
                 updateFilters({ authors: selected.join(",") })
               }
             />
-
+            <div className="divider"></div>
             {/* Sources Filter */}
             <SourceFilter
-              initialItems={sources}
+              initialItems={source}
               onSelect={(selected: number[]) =>
                 updateFilters({ source: selected.join(",") })
               }
             />
-
-            {/* Categories Filter */}
-            <CategoryFilter
-              initialItems={categories}
-              onSelect={(selected: number[]) =>
-                updateFilters({ category: selected.join(",") })
-              }
-            />
-
+            <div className="divider"></div>
             {/* Date Filters */}
             <DateFilter
               label="Published After"
@@ -132,17 +149,32 @@ const Headlines = () => {
         {/* Article Grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[...Array(12)].map((_, index) => (
+            {[...Array(15)].map((_, index) => (
               <div key={index} className="skeleton h-48 w-full" />
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {articleData?.data?.map((article: Article) => (
-              <ArticleCard key={article.id} article={article} />
+            {articleData?.pages.map((page, pageIndex) => (
+              <Fragment key={pageIndex}>
+                {page.data?.map((article: Article) => (
+                  <ArticleCard key={article.id} article={article} />
+                ))}
+              </Fragment>
             ))}
           </div>
         )}
+
+        {isFetchingNextPage && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(15)].map((_, index) => (
+              <div key={index} className="skeleton h-48 w-full" />
+            ))}
+          </div>
+        )}
+
+        {/* Infinite scroll trigger */}
+        <div ref={ref} className="h-10"></div>
       </div>
     </div>
   );
