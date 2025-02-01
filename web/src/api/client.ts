@@ -1,11 +1,9 @@
-import createClient from "openapi-fetch";
+import createClient, { Middleware } from "openapi-fetch";
 import { paths } from "./types/api";
 import Cookies from "js-cookie";
 
 /**
- * Fetches the token from the auth cookie dynamically on each API call.
- * Ensures the latest token is used if the auth state changes (e.g., after login/logout).
- * Returns the token if valid, or `null` if the cookie is missing, invalid, or parsing fails.
+ * Fetches the token from the auth cookie.
  */
 const getTokenFromCookie = () => {
   try {
@@ -20,12 +18,22 @@ const getTokenFromCookie = () => {
   return null;
 };
 
-const { GET, POST, PUT, DELETE } = createClient<paths>({
+const apiClient = createClient<paths>({
   baseUrl: "http://localhost:8000",
   headers: {
     Accepts: "application/json",
-    Authorization: `Bearer ${getTokenFromCookie()}`,
   },
 });
 
-export { GET, POST, PUT, DELETE };
+const authMiddleware: Middleware = {
+  async onRequest({ request, options }) {
+    // set Auth header dynamically on every request
+    // Read the auth token from cookie
+    request.headers.set("Authorization", `Bearer ${getTokenFromCookie()}`);
+    return request;
+  },
+};
+
+apiClient.use(authMiddleware);
+
+export const { GET, POST, PUT, DELETE } = apiClient;

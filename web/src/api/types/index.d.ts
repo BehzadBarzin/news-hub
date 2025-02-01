@@ -12,5 +12,7 @@ export type Feed = components["schemas"]["Feed"];
 
 export type LoginRequest =
   paths["/api/login"]["post"]["requestBody"]["content"]["application/json"];
+export type RegisterRequest =
+  paths["/api/register"]["post"]["requestBody"]["content"]["application/json"];
 export type AuthResponse =
   paths["/api/login"]["post"]["responses"]["200"]["content"]["application/json"];
