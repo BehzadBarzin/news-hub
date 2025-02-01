@@ -38,7 +38,7 @@
                     {
                         "name": "title",
                         "in": "query",
-                        "description": "Filter articles by title",
+                        "description": "Comma-separated list of keywords to filter articles by title",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -47,19 +47,28 @@
                     {
                         "name": "source",
                         "in": "query",
-                        "description": "Filter articles by source ID",
+                        "description": "Comma-separated array of Source IDs to filter articles by source",
                         "required": false,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     },
                     {
                         "name": "category",
                         "in": "query",
-                        "description": "Filter articles by category ID",
+                        "description": "Comma-separated array of Category IDs to filter articles by category",
                         "required": false,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "authors",
+                        "in": "query",
+                        "description": "Comma-separated array of Author IDs to filter articles by authors",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     {

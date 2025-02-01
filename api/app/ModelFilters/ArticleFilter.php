@@ -16,17 +16,32 @@ class ArticleFilter extends ModelFilter
 
     public function title($title): ArticleFilter
     {
-        return $this->where('title', 'LIKE', "%$title%");
+        $titles = explode(',', $title);
+        return $this->where(function ($query) use ($titles) {
+            foreach ($titles as $title) {
+                $query->orWhere('title', 'LIKE', "%$title%");
+            }
+        });
     }
 
     public function source($sourceId): ArticleFilter
     {
-        return $this->where('source_id', $sourceId);
+        $sourceIds = explode(',', $sourceId);
+        return $this->whereIn('source_id', $sourceIds);
     }
 
     public function category($categoryId): ArticleFilter
     {
-        return $this->where('category_id', $categoryId);
+        $categoryIds = explode(',', $categoryId);
+        return $this->whereIn('category_id', $categoryIds);
+    }
+
+    public function authors($authorIds): ArticleFilter
+    {
+        $authorIds = explode(',', $authorIds);
+        return $this->whereHas('authors', function ($query) use ($authorIds) {
+            $query->whereIn('authors.id', $authorIds);
+        });
     }
 
     public function publishedAfter($date): ArticleFilter

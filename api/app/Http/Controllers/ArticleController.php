@@ -36,23 +36,30 @@ class ArticleController extends Controller
      *     @OA\Parameter(
      *         name="title",
      *         in="query",
-     *         description="Filter articles by title",
+     *         description="Comma-separated list of keywords to filter articles by title",
      *         required=false,
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="source",
      *         in="query",
-     *         description="Filter articles by source ID",
+     *         description="Comma-separated array of Source IDs to filter articles by source",
      *         required=false,
-     *         @OA\Schema(type="integer")
+     *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="category",
      *         in="query",
-     *         description="Filter articles by category ID",
+     *         description="Comma-separated array of Category IDs to filter articles by category",
      *         required=false,
-     *         @OA\Schema(type="integer")
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="authors",
+     *         in="query",
+     *         description="Comma-separated array of Author IDs to filter articles by authors",
+     *         required=false,
+     *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="published_after",
