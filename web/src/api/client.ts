@@ -19,7 +19,7 @@ const getTokenFromCookie = () => {
 };
 
 const apiClient = createClient<paths>({
-  baseUrl: "http://localhost:8000",
+  baseUrl: import.meta.env.VITE_API_BASE,
   headers: {
     Accepts: "application/json",
   },

@@ -67,7 +67,7 @@ const HomePage: React.FC = () => {
     <div className="min-h-screen bg-base-200">
       {/* Hero Section */}
       <div ref={heroRef} className="hero min-h-[90vh] bg-base-100">
-        <div className="hero-content">
+        <div className="hero-content flex flex-wrap">
           <div className="max-w-2xl">
             <h1 className="text-5xl font-bold animate-fade-in-down">
               Stay Informed with the Latest News
@@ -103,7 +103,7 @@ const HomePage: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {articlesData?.data?.map((article) => (
-              <div className="article-card">
+              <div key={article.id} className="article-card">
                 <ArticleCard article={article} />
               </div>
             ))}
