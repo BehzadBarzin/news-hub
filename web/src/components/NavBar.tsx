@@ -37,10 +37,16 @@ const NavBar = () => {
           </div>
           <ul
             tabIndex={0}
-            className="menu menu-lg dropdown-content bg-base-200 rounded-box z-1 mt-3 w-52 p-2 shadow"
+            className="menu menu-xl dropdown-content bg-base-200 rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
             <li>
-              <Link to="/headlines">Headlines</Link>
+              <Link to="/headlines">
+                <div className="inline-grid *:[grid-area:1/1]">
+                  <div className="status status-success animate-ping"></div>
+                  <div className="status status-success"></div>
+                </div>{" "}
+                Headlines
+              </Link>
             </li>
             <li>
               <Link to="/about">About</Link>
@@ -55,6 +61,10 @@ const NavBar = () => {
         <ul className="menu menu-horizontal px-1">
           <li>
             <Link to="/headlines" className="font-bold bg-base-200/50">
+              <div className="inline-grid *:[grid-area:1/1]">
+                <div className="status status-success animate-ping"></div>
+                <div className="status status-success"></div>
+              </div>
               Headlines
             </Link>
           </li>

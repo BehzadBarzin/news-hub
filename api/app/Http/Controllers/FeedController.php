@@ -83,7 +83,7 @@ class FeedController extends Controller
      */
     public function index()
     {
-        return Feed::where('user_id', auth()->id())->get();
+        return Feed::where('user_id', auth()->id())->with(['sources', 'authors', 'categories'])->get();
     }
 
     /**
@@ -123,6 +123,9 @@ class FeedController extends Controller
                 'message' => 'Forbidden!'
             ], 403);
         }
+
+        // Load the relationships
+        $feed->load(['sources', 'authors', 'categories']);
 
         return $feed;
     }
@@ -166,8 +169,12 @@ class FeedController extends Controller
      *         description="Paginated list of articles",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Article")),
-     *             @OA\Property(property="meta", type="object", ref="#/components/schemas/PaginationMeta")
+     *             allOf={
+     *                 @OA\Schema(ref="#/components/schemas/PaginationMeta"),
+     *                 @OA\Schema(
+     *                     @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Article"))
+     *                 )
+     *             }
      *         )
      *     ),
      *     @OA\Response(
@@ -283,6 +290,9 @@ class FeedController extends Controller
         if ($request->has('categories')) {
             $feed->categories()->sync($request->categories);
         }
+
+        // Load the relationships
+        $feed->load(['sources', 'authors', 'categories']);
 
         return response()->json($feed);
     }

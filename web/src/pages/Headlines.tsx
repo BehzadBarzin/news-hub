@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   ArticleFilter,
   useInfiniteArticles,
@@ -12,6 +12,11 @@ import KeywordFilter from "../components/KeywordFilter";
 import SourceFilter from "../components/SourceFilter";
 import { useSearchParams } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
+import { useAuth } from "../context/AuthContext";
+import { useCreateFeed, useUpdateFeed } from "../api/queries/feedQueries";
+import { useAppContext } from "../context/AppContext";
+import EditIcon from "../components/icons/EditIcon";
+import SaveIcon from "../components/icons/SaveIcon";
 
 const Headlines = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -67,12 +72,99 @@ const Headlines = () => {
     setSearchParams(currentParams);
   };
 
+  // ---------------------------------
+  // Create Feed Code:
+  // ---------------------------------
+  const isAnyFilterSet =
+    title.length > 0 ||
+    authors.length > 0 ||
+    source.length > 0 ||
+    category.length > 0;
+
+  const { mutate: createFeed } = useCreateFeed({
+    onMutate: () => showLoading(),
+    onSettled: () => hideLoading(),
+    onSuccess: () => showToast("Feed created successfully!", "success"),
+    onError: (error) =>
+      showToast(error?.message || "Failed to create feed", "error"),
+  });
+
+  // ---------------------------------
+  // Update Feed Code:
+  // ---------------------------------
+  const { showLoading, hideLoading, showToast } = useAppContext();
+  const { data: authData } = useAuth();
+
+  // If coming from feeds (by clicking "View" on feed card), this variable will have value.
+  const feedId = Number(searchParams.get("feedId")) || null;
+
+  // Track initial filter criteria
+  const [initialFilters, setInitialFilters] = useState<ArticleFilter | null>(
+    null
+  );
+
+  useEffect(() => {
+    // If this page is a feed, and page is just loaded.
+    if (feedId && !initialFilters) {
+      setInitialFilters({
+        title: title.join(","),
+        authors: authors.join(","),
+        source: source.join(","),
+        category: category.join(","),
+        published_after: publishedAfter,
+        published_before: publishedBefore,
+      });
+    }
+  }, [
+    feedId,
+    title,
+    authors,
+    source,
+    category,
+    publishedAfter,
+    publishedBefore,
+    initialFilters,
+  ]);
+
+  // Detect filter changes to enable the "Update Feed" button
+  const currentFilters: ArticleFilter = {
+    title: title.join(","),
+    authors: authors.join(","),
+    source: source.join(","),
+    category: category.join(","),
+    published_after: publishedAfter,
+    published_before: publishedBefore,
+  };
+
+  const hasFiltersChanged =
+    initialFilters &&
+    JSON.stringify(currentFilters) !== JSON.stringify(initialFilters);
+
+  // Update Feed mutation (set to a dummy object if feedId is null, because it won't be invoked)
+  const { mutate: updateFeed } =
+    feedId !== null
+      ? // eslint-disable-next-line react-hooks/rules-of-hooks
+        useUpdateFeed(feedId, {
+          onMutate: () => showLoading(),
+          onSuccess: () => {
+            showToast("Feed updated successfully!", "success");
+            // Reset initial filters to current filters
+            setInitialFilters(currentFilters);
+          },
+          onError: (error) =>
+            showToast(error?.message || "Failed to update feed", "error"),
+          onSettled: () => hideLoading(),
+        })
+      : { mutate: () => {} };
+
   return (
     <div className="drawer lg:drawer-open flex flex-col lg:flex-row min-h-screen mt-[-10px] h-full">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
 
       {/* Sidebar */}
-      <div className={`drawer-side z-50 overflow-scroll bg-base-200 px-4 pt-3`}>
+      <div
+        className={`drawer-side max-w-96 z-50 overflow-scroll bg-base-200 px-4 pt-3`}
+      >
         <div className="flex flex-col w-full">
           <label
             htmlFor="my-drawer"
@@ -115,25 +207,31 @@ const Headlines = () => {
               }
             />
             <div className="divider"></div>
-            {/* Date Filters */}
-            <DateFilter
-              label="Published After"
-              initial={publishedAfter ? new Date(publishedAfter) : null}
-              onSelect={(selected: Date | null) =>
-                updateFilters({
-                  published_after: selected?.toISOString().split("T")[0] || "",
-                })
-              }
-            />
-            <DateFilter
-              label="Published Before"
-              initial={publishedBefore ? new Date(publishedBefore) : null}
-              onSelect={(selected: Date | null) =>
-                updateFilters({
-                  published_before: selected?.toISOString().split("T")[0] || "",
-                })
-              }
-            />
+            {/* Date Filters (Only show if not feed) */}
+            {!feedId && (
+              <>
+                <DateFilter
+                  label="Published After"
+                  initial={publishedAfter ? new Date(publishedAfter) : null}
+                  onSelect={(selected: Date | null) =>
+                    updateFilters({
+                      published_after:
+                        selected?.toISOString().split("T")[0] || "",
+                    })
+                  }
+                />
+                <DateFilter
+                  label="Published Before"
+                  initial={publishedBefore ? new Date(publishedBefore) : null}
+                  onSelect={(selected: Date | null) =>
+                    updateFilters({
+                      published_before:
+                        selected?.toISOString().split("T")[0] || "",
+                    })
+                  }
+                />
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -175,6 +273,52 @@ const Headlines = () => {
 
         {/* Infinite scroll trigger */}
         <div ref={ref} className="h-10"></div>
+
+        {authData && !feedId && isAnyFilterSet && (
+          <div className="fixed bottom-4 right-4">
+            <button
+              className="btn btn-success"
+              onClick={() => {
+                const feedName = prompt("Enter a name for your feed:");
+                if (feedName) {
+                  createFeed({
+                    name: feedName,
+                    keywords: title,
+                    authors: authors,
+                    sources: source,
+                    categories: category,
+                  });
+                }
+              }}
+            >
+              <SaveIcon color="#000" />
+              Create Feed
+            </button>
+          </div>
+        )}
+
+        {/* Floating "Update Feed" button (shown only if this is feed and filters are changed)*/}
+        {authData && hasFiltersChanged && (
+          <div className="fixed bottom-4 right-4">
+            <button
+              className="btn btn-secondary btn-lg"
+              onClick={() => {
+                // In this page filters are passed as query strings, so the lists are converted to string with .join(",")
+                // But here we're trying to update the Feed object with accepts id values as arrays, so we need to convert it.
+                updateFeed({
+                  keywords: currentFilters.title?.split(","),
+                  authors: currentFilters.authors?.split(",").map(Number) || [],
+                  sources: currentFilters.source?.split(",").map(Number) || [],
+                  categories:
+                    currentFilters.category?.split(",").map(Number) || [],
+                });
+              }}
+            >
+              <EditIcon color="#FFF" />
+              Update Feed
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

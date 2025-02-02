@@ -52,8 +52,12 @@ class SourceController extends Controller
      *         description="Successful operation",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Source")),
-     *             @OA\Property(property="meta", type="object", ref="#/components/schemas/PaginationMeta")
+     *             allOf={
+     *                 @OA\Schema(ref="#/components/schemas/PaginationMeta"),
+     *                 @OA\Schema(
+     *                     @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Source"))
+     *                 )
+     *             }
      *         )
      *     )
      * )

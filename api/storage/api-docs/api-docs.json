@@ -107,18 +107,23 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/Article"
-                                            }
-                                        },
-                                        "meta": {
+                                    "type": "object",
+                                    "allOf": [
+                                        {
                                             "$ref": "#/components/schemas/PaginationMeta"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Article"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
                                         }
-                                    },
-                                    "type": "object"
+                                    ]
                                 }
                             }
                         }
@@ -395,18 +400,23 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/Author"
-                                            }
-                                        },
-                                        "meta": {
+                                    "type": "object",
+                                    "allOf": [
+                                        {
                                             "$ref": "#/components/schemas/PaginationMeta"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Author"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
                                         }
-                                    },
-                                    "type": "object"
+                                    ]
                                 }
                             }
                         }
@@ -911,18 +921,23 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/Article"
-                                            }
-                                        },
-                                        "meta": {
+                                    "type": "object",
+                                    "allOf": [
+                                        {
                                             "$ref": "#/components/schemas/PaginationMeta"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Article"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
                                         }
-                                    },
-                                    "type": "object"
+                                    ]
                                 }
                             }
                         }
@@ -995,18 +1010,23 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/Source"
-                                            }
-                                        },
-                                        "meta": {
+                                    "type": "object",
+                                    "allOf": [
+                                        {
                                             "$ref": "#/components/schemas/PaginationMeta"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Source"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
                                         }
-                                    },
-                                    "type": "object"
+                                    ]
                                 }
                             }
                         }

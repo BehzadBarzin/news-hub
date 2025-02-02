@@ -87,8 +87,12 @@ class ArticleController extends Controller
      *         description="Successful operation",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Article")),
-     *             @OA\Property(property="meta", type="object", ref="#/components/schemas/PaginationMeta")
+     *             allOf={
+     *                 @OA\Schema(ref="#/components/schemas/PaginationMeta"),
+     *                 @OA\Schema(
+     *                     @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Article"))
+     *                 )
+     *             }
      *         )
      *     )
      * )
@@ -105,6 +109,8 @@ class ArticleController extends Controller
             $relations = explode(',', $request->query('with'));
             $query->with($relations);
         }
+
+        $query->orderBy('published_at', 'desc');
 
         return $query->simplePaginate($perPage);
     }

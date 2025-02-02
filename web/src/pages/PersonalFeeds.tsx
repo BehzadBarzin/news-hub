@@ -26,14 +26,32 @@ const PersonalFeeds = () => {
 
   return (
     <div className="m-5 mb-0">
-      <div role="alert" className="alert alert-info alert-soft">
-        <span>
-          Go to{" "}
-          <Link to={"/headlines"} className="font-bold italic text-primary">
-            Headlines
-          </Link>{" "}
-          to create a new feed.
-        </span>
+      <div className="bg-base-100 border border-base-300 collapse">
+        <input type="checkbox" className="peer" />
+        <div className="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
+          How do I create and edit a feed?
+        </div>
+        <div className="collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
+          <ul className="list-disc pl-5">
+            <li>
+              Go to{" "}
+              <Link
+                to={"/headlines"}
+                className="font-bold italic underline text-blue-800"
+              >
+                "Headlines"
+              </Link>{" "}
+              to Create a new feed by setting filtering criteria then clicking
+              <span className="font-bold italic underline">"Save as Feed"</span>
+              .
+            </li>
+            <li>
+              Navigate to each feed's page by clicking{" "}
+              <span className="font-bold italic underline">"View"</span> on its
+              card to edit the feed criteria.
+            </li>
+          </ul>
+        </div>
       </div>
 
       <div className="divider"></div>

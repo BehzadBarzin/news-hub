@@ -2,6 +2,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DELETE, GET, PATCH, POST } from "../client";
 import { paths } from "../types/api";
 
+export type MutationCallbacks = {
+  onMutate?: () => void;
+  onSuccess?: () => void;
+  onError?: (error?: Error) => void;
+  onSettled?: () => void;
+};
+
 export const useFeeds = () => {
   return useQuery({
     queryKey: ["feeds"],
@@ -45,10 +52,12 @@ export const useFeedArticles = (
 type NewFeedBody =
   paths["/api/feeds"]["post"]["requestBody"]["content"]["application/json"];
 
-export const useCreateFeed = () => {
+export const useCreateFeed = (callbacks?: MutationCallbacks) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (newFeed: NewFeedBody) => {
+      callbacks?.onMutate?.();
+
       const { data, error } = await POST("/api/feeds", {
         body: newFeed,
       });
@@ -60,7 +69,14 @@ export const useCreateFeed = () => {
       return data;
     },
     onSuccess: () => {
+      callbacks?.onSuccess?.();
       queryClient.invalidateQueries({ queryKey: ["feeds"] }); // Re-fetch feeds after creation
+    },
+    onError: (error) => {
+      callbacks?.onError?.(error);
+    },
+    onSettled: () => {
+      callbacks?.onSettled?.();
     },
   });
 };
@@ -68,10 +84,15 @@ export const useCreateFeed = () => {
 type UpdateFeedBody =
   paths["/api/feeds/{id}"]["patch"]["requestBody"]["content"]["application/json"];
 
-export const useUpdateFeed = (feedId: number) => {
+export const useUpdateFeed = (
+  feedId: number,
+  callbacks?: MutationCallbacks
+) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (feedData: UpdateFeedBody) => {
+      callbacks?.onMutate?.();
+
       const { data, error } = await PATCH("/api/feeds/{id}", {
         body: feedData,
         params: {
@@ -86,15 +107,27 @@ export const useUpdateFeed = (feedId: number) => {
       return data;
     },
     onSuccess: () => {
+      callbacks?.onSuccess?.();
       queryClient.invalidateQueries({ queryKey: ["feeds"] }); // Re-fetch feeds after creation
+    },
+    onError: (error) => {
+      callbacks?.onError?.(error);
+    },
+    onSettled: () => {
+      callbacks?.onSettled?.();
     },
   });
 };
 
-export const useDeleteFeed = (feedId: number) => {
+export const useDeleteFeed = (
+  feedId: number,
+  callbacks?: MutationCallbacks
+) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () => {
+      callbacks?.onMutate?.();
+
       const { data, error } = await DELETE("/api/feeds/{id}", {
         params: {
           path: { id: feedId },
@@ -108,7 +141,14 @@ export const useDeleteFeed = (feedId: number) => {
       return data;
     },
     onSuccess: () => {
+      callbacks?.onSuccess?.();
       queryClient.invalidateQueries({ queryKey: ["feeds"] }); // Re-fetch feeds after creation
+    },
+    onError: (error) => {
+      callbacks?.onError?.(error);
+    },
+    onSettled: () => {
+      callbacks?.onSettled?.();
     },
   });
 };
