@@ -163,7 +163,7 @@ const Headlines = () => {
 
       {/* Sidebar */}
       <div
-        className={`drawer-side max-w-96 z-50 overflow-scroll bg-base-200 px-4 pt-3`}
+        className={`drawer-side lg:max-w-96 z-50 overflow-scroll bg-base-200 px-4 pt-3`}
       >
         <div className="flex flex-col w-full">
           <label

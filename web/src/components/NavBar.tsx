@@ -4,6 +4,7 @@ import LoginDialog from "./LoginDialog";
 import { useAuth } from "../context/AuthContext";
 import RegisterDialog from "./RegisterDialog";
 import { useAppContext } from "../context/AppContext";
+import Logo from "./Logo";
 
 const NavBar = () => {
   const { showLoading, hideLoading, showToast } = useAppContext();
@@ -54,7 +55,7 @@ const NavBar = () => {
           </ul>
         </div>
         <Link to="/" className="btn btn-ghost text-xl">
-          NewsHub
+          <Logo />
         </Link>
       </div>
       <div className="navbar-center hidden lg:flex">
