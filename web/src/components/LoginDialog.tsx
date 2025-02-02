@@ -2,7 +2,6 @@ import { useAuth } from "../context/AuthContext";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { LoginRequest } from "../api/types";
 import { useAppContext } from "../context/AppContext";
 
 const loginSchema = z.object({

@@ -26,7 +26,7 @@ const apiClient = createClient<paths>({
 });
 
 const authMiddleware: Middleware = {
-  async onRequest({ request, options }) {
+  async onRequest({ request }) {
     // set Auth header dynamically on every request
     // Read the auth token from cookie
     request.headers.set("Authorization", `Bearer ${getTokenFromCookie()}`);

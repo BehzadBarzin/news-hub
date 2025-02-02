@@ -10,4 +10,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 // Using Job (Queue)
-Schedule::job(new FetchNewsJob())->hourly();
+// Schedule::job(new FetchNewsJob())->hourly();
+Schedule::job(new FetchNewsJob())->everyTwoMinutes();

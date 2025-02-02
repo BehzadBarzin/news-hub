@@ -8,6 +8,12 @@ services:
       - "3306:3306"
     networks:
       - app
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      retries: 5
+      timeout: 5s
 
   phpmyadmin:
     depends_on:
@@ -21,11 +27,41 @@ services:
       - "5000:80"
     networks:
       - app
-    volumes:
-      - db_data:/var/lib/mysql
+
+  api:
+    build:
+      context: ./
+      dockerfile: ./api/Dockerfile
+    ports:
+      - 8000:8000
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: news-hub
+      DB_USERNAME: root
+      DB_PASSWORD: root
+    networks:
+      - app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ./
+      dockerfile: ./web/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_API_BASE: "http://api:8000"
+    networks:
+      - app
+    depends_on:
+      - api
 
 networks:
   app:
     driver: bridge
+
 volumes:
   db_data:
