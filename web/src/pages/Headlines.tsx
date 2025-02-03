@@ -208,7 +208,7 @@ const Headlines = () => {
             />
             <div className="divider"></div>
             {/* Date Filters (Only show if not feed) */}
-            {!feedId && (
+            {!feedId ? (
               <>
                 <DateFilter
                   label="Published After"
@@ -231,6 +231,10 @@ const Headlines = () => {
                   }
                 />
               </>
+            ) : (
+              <div role="alert" className="alert alert-warning alert-soft">
+                <span>Feeds don't support date filtering yet!</span>
+              </div>
             )}
           </div>
         </div>
@@ -306,11 +310,18 @@ const Headlines = () => {
                 // In this page filters are passed as query strings, so the lists are converted to string with .join(",")
                 // But here we're trying to update the Feed object with accepts id values as arrays, so we need to convert it.
                 updateFeed({
-                  keywords: currentFilters.title?.split(","),
-                  authors: currentFilters.authors?.split(",").map(Number) || [],
-                  sources: currentFilters.source?.split(",").map(Number) || [],
-                  categories:
-                    currentFilters.category?.split(",").map(Number) || [],
+                  keywords: currentFilters.title
+                    ? currentFilters.title.split(",")
+                    : [],
+                  authors: currentFilters.authors
+                    ? currentFilters.authors.split(",").map(Number)
+                    : [],
+                  sources: currentFilters.source
+                    ? currentFilters.source.split(",").map(Number)
+                    : [],
+                  categories: currentFilters.category
+                    ? currentFilters.category.split(",").map(Number)
+                    : [],
                 });
               }}
             >
